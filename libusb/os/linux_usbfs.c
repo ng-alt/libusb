@@ -1798,6 +1798,15 @@ static int handle_bulk_completion(struct usbi_transfer *itransfer,
 
 	tpriv->num_retired++;
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,0)
+	/* Workaround for 2.4 UHCI interrupt transfers */
+	if ((urb->status == -ECONNABORTED || urb->status == -ECONNRESET) &&
+			urb->type == USBFS_URB_TYPE_INTERRUPT &&
+			urb->actual_length > 0) {
+		urb->status = 0;
+	}
+#endif
+
 	if (tpriv->reap_action != NORMAL) {
 		/* cancelled, submit_fail, or completed early */
 		usbi_dbg("abnormal reap: urb status %d", urb->status);

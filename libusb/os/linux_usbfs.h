@@ -21,7 +21,13 @@
 #ifndef __LIBUSB_USBFS_H__
 #define __LIBUSB_USBFS_H__
 
-#define SYSFS_DEVICE_PATH "/sys/bus/usb/devices"
+#include <linux/version.h>
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,0)
+ #define SYSFS_DEVICE_PATH "/sys/bus/usb/devices"
+#else
+ #define SYSFS_DEVICE_PATH "/proc/bus/usb/devices"
+#endif
 
 struct usbfs_ctrltransfer {
 	/* keep in sync with usbdevice_fs.h:usbdevfs_ctrltransfer */
